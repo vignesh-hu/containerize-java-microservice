@@ -1,5 +1,6 @@
 # Containerize Java Microservices using CircleCI
 
+[![CircleCI](https://circleci.com/gh/jainishshah17/containerize-java-microservice/tree/master.svg?style=svg)](https://circleci.com/gh/jainishshah17/containerize-java-microservice/tree/master)
 
 `To make this integration work you will need to have running Artifactory-Enterprise/Artifactory-pro/Artifactory SAAS.`
 
