@@ -12,7 +12,7 @@ mvn clean install
 
 #### Command to build docker image and push it to Artifactory:
 
-![screenshot](img/Screen_Shot1.png)
+![screenshot](img/Screen_Shot_1.png)
 
 *   Build docker image: ```docker build -t $ARTIFACTORY_DOCKER_REPOSITORY/java-webapp .```
 *   Run docker container: ```docker run -d -p 8080:8080 $ARTIFACTORY_DOCKER_REPOSITORY/java-webapp```
@@ -61,14 +61,14 @@ DISTRIBUTION_REPO -> Artifactory distribution repository to push artifacts to Bi
 e.g DISTRIBUTION_REPO -> pipeline-distribution
 ```
 
-![screenshot](img/Screen_Shot2.png)
+![screenshot](img/Screen_Shot_2.png)
 
 ##### Step 4:
 
 You should be able to see published Docker image in Artifactory.
-![screenshot](img/Screen_Shot3.png)
+![screenshot](img/Screen_Shot_3.png)
 
 Also Build information.
 
-![screenshot](img/Screen_Shot4.png)
+![screenshot](img/Screen_Shot_4.png)
 ## Note: `This solution only supports Artifactory with valid ssl as Bitbucket Pipeline does not support insecure docker registry `
