@@ -2,11 +2,7 @@
 
 `To make this integration work you will need to have running Artifactory-Enterprise/Artifactory-pro/Artifactory SAAS.`
 
-#### Command to test maven project:
-
-* Set npm command line client to work with [Artifactory Npm Registry](https://www.jfrog.com/confluence/display/RTF/Npm+Registry).
-    create `.npmrc` file and paste following content to it:
-    
+#### Command to test maven project:    
 ```
 ## Test Java WebApplication 
 mvn test
