@@ -38,4 +38,14 @@ jobs:
 
       # run tests!
       - run: mvn integration-test
-      - run: mvn clean package
+      - run: mvn clean install
+      # Build docker image
+      - run: docker build --rm=false -t $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM .
+      # Run docker container
+      - run: docker run -d -p 8080:8080 $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
+      # Test docker image
+      - run: sleep 20 && curl http://localhost:8080/
+      # docker login
+      - run: docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+      # Push docker image to docker registry
+      - run: docker push $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
