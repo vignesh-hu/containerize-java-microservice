@@ -51,3 +51,4 @@ jobs:
       - run: docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
       # Push docker image to docker registry
       - run: docker push $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
+      - run: docker push $DOCKER_REPOSITORY/java-webapp:latest
