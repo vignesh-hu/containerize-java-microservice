@@ -44,7 +44,7 @@ jobs:
       # Run docker container
       - run: docker run -d -p 8080:8080 --name java-webapp $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
       # Test docker image
-      - run: docker exec java-webapp curl --retry 10 --retry-connrefused http://localhost:8080/
+      - run: docker exec java-webapp curl --retry 10 http://localhost:8080/
       # docker login
       - run: docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
       # Push docker image to docker registry
