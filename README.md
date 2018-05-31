@@ -12,8 +12,11 @@ mvn clean install
 
 #### Command to build docker image and push it to Artifactory:
 
+![screenshot](img/Screen_Shot1.png)
+
 *   Build docker image: ```docker build -t $ARTIFACTORY_DOCKER_REPOSITORY/java-webapp .```
 *   Run docker container: ```docker run -d -p 8080:8080 $ARTIFACTORY_DOCKER_REPOSITORY/java-webapp```
+*   Test container accessing application in browser [http://localhost:8080/](http://localhost:8080/)
 *   Login to Artifactory docker registry: ```docker login -u ARTIFACTORY_USER -p $ARTIFACTORY_PASSWORD $ARTIFACTORY_DOCKER_REPOSITORY```
 *   Push docker image: ```docker push $ARTIFACTORY_DOCKER_REPOSITORY/node-version```
 
