@@ -45,6 +45,8 @@ jobs:
       - run: docker run -d -p 8080:8080 --name java-webapp $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
       # Test docker image
       - run: sleep 20 && docker exec java-webapp curl --retry 10 http://localhost:8080/
+      # Tagging Image with dynamic tag
+      - run: docker tag $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM $DOCKER_REPOSITORY/java-webapp:latest
       # docker login
       - run: docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
       # Push docker image to docker registry
