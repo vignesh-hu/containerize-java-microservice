@@ -1,0 +1,65 @@
+# This is a sample build configuration for all languages.
+# Check our guides at https://confluence.atlassian.com/x/VYk8Lw for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# enable Docker for your repository
+options:
+  docker: true
+
+# You can specify a custom docker image from Docker Hub as your build environment.
+# image: docker-image:tag
+image: maven:3.3-jdk-8
+pipelines:
+  default:
+    - step:
+        script:
+          # Install JFrog CLI
+          - curl -fL https://getcli.jfrog.io | sh
+          # Configure Artifactory instance with JFrog CLI
+          - ./jfrog rt config --url=$ARTIFACTORY_URL --user=$ARTIFACTORY_USER --password=$ARTIFACTORY_PASSWORD --interactive=false artifactory
+          # Set the M2_HOME environment variable
+          - export M2_HOME=/usr/share/maven
+          # Replace the repository name in the configuration.yml to the correct one.
+          - sed -i 's,MAVEN_SNAPSHOT_REPO_KEY,'"$MAVEN_SNAPSHOT_REPO_KEY"',g' configuration.yml
+          - sed -i 's,MAVEN_RELEASE_REPO_KEY,'"$MAVEN_RELEASE_REPO_KEY"',g' configuration.yml
+          # Run the MVN command
+          - ./jfrog rt mvn "clean install" configuration.yml --build-name=$BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH --build-number=$BITBUCKET_BUILD_NUMBER
+          # Build docker image
+          - docker build --rm=false -t $ARTIFACTORY_DOCKER_REPOSITORY/java-webapp:$BITBUCKET_BUILD_NUMBER .
+          # Docker publish to push image to Artifactory
+          - ./jfrog rt dp $ARTIFACTORY_DOCKER_REPOSITORY/java-webapp:$BITBUCKET_BUILD_NUMBER $DOCKER_DEV_REPO --build-name=$BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH --build-number=$BITBUCKET_BUILD_NUMBER
+          # Capture environment variables for build information
+          - ./jfrog rt bce $BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH $BITBUCKET_BUILD_NUMBER
+          # Scan Build through JFrog Xray (Optional)
+          - ./jfrog rt bs $BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH $BITBUCKET_BUILD_NUMBER
+          # Publish build information to Artifactory
+          - ./jfrog rt bp $BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH $BITBUCKET_BUILD_NUMBER
+        artifacts:
+          - "**/*"
+    - step:
+        name: Deploy to Staging
+        deployment: staging
+        script:
+          # Install JFrog CLI
+          - curl -fL https://getcli.jfrog.io | sh
+          # Configure Artifactory instance with JFrog CLI
+          - ./jfrog rt config --url=$ARTIFACTORY_URL --user=$ARTIFACTORY_USER --password=$ARTIFACTORY_PASSWORD --interactive=false artifactory
+          # Scan Build through JFrog Xray (Optional)
+          - ./jfrog rt bs $BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH $BITBUCKET_BUILD_NUMBER
+          # Promote build to Staging
+          - ./jfrog rt bpr $BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH $BITBUCKET_BUILD_NUMBER $DOCEKR_STAGE_REPO --status="Staged" --copy=true
+    - step:
+        name: Deploy to Production
+        deployment: production
+        trigger: manual
+        script:
+          # Install JFrog CLI
+          - curl -fL https://getcli.jfrog.io | sh
+          # Configure Artifactory instance with JFrog CLI
+          - ./jfrog rt config--url=$ARTIFACTORY_URL --user=$ARTIFACTORY_USER --password=$ARTIFACTORY_PASSWORD --interactive=false artifactory
+          # Scan Build through JFrog Xray (This step requires JFrog Xray. You can comment it if not using Xray)
+          - ./jfrog rt bs $BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH $BITBUCKET_BUILD_NUMBER
+          # Promote build to Production
+          - ./jfrog rt bpr $BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH $BITBUCKET_BUILD_NUMBER $DOCEKR_PROD_REPO --status="Promoting to Prod" --copy=true
+          # Distribute build to Bintray (This step requires JFrog Bintray. You can comment it if not using Bintray)
+          - ./jfrog rt bd $BITBUCKET_REPO_OWNER-$BITBUCKET_REPO_SLUG-$BITBUCKET_BRANCH $BITBUCKET_BUILD_NUMBER $DISTRIBUTION_REPO
