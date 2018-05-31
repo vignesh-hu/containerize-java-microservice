@@ -1,4 +1,5 @@
-# Artifactory Integration with Bitbucket Pipeline
+# Containerize Java Microservices using CircleCI
+
 
 `To make this integration work you will need to have running Artifactory-Enterprise/Artifactory-pro/Artifactory SAAS.`
 
@@ -10,65 +11,45 @@ mvn test
 mvn clean install
 ```
 
-#### Command to build docker image and push it to Artifactory:
+#### Command to build docker image and push it to docker registry:
 
 ![screenshot](img/Screen_Shot_1.png)
 
-*   Build docker image: ```docker build -t $ARTIFACTORY_DOCKER_REPOSITORY/java-webapp .```
-*   Run docker container: ```docker run -d -p 8080:8080 $ARTIFACTORY_DOCKER_REPOSITORY/java-webapp```
+*   Build docker image: ```docker build -t $DOCKER_REGISTRY/java-webapp .```
+*   Run docker container: ```docker run -d -p 8080:8080 $DOCKER_REGISTRY/java-webapp```
 *   Test container accessing application in browser [http://localhost:8080/](http://localhost:8080/)
-*   Login to Artifactory docker registry: ```docker login -u ARTIFACTORY_USER -p $ARTIFACTORY_PASSWORD $ARTIFACTORY_DOCKER_REPOSITORY```
-*   Push docker image: ```docker push $ARTIFACTORY_DOCKER_REPOSITORY/node-version```
+*   Login to Artifactory docker registry: ```docker login -u $USER -p $PASSWORD $DOCKER_REGISTRY```
+*   Push docker image: ```docker push $DOCKER_REGISTRY/java-webapp```
 
-### Steps to build docker images using Bitbucket pipeline and push it to Artifactory.
+### Steps to build docker images using CircleCI and push it to docker registry.
 
 ##### Step 1:
 
-copy `bitbucke-pipeline.yml` to your project
+copy `.circleci/config.yml` to your project
 
 ##### Step 2:
 
-Enable your project in Bitbucket Pipeline.
+Add your project in Circle CI.
 
 ##### Step 3:
 
-add Environment Variables `ARTIFACTORY_URL`, `ARTIFACTORY_USER`, `ARTIFACTORY_DOCKER_REPOSITORY`, `ARTIFACTORY_PASSWORD`, `MVN_REPO`, `DOCEKR_STAGE_REPO`, `DOCEKR_PROD_REPO` and `DISTRIBUTION_REPO` in Environment Variables settings of Bitbucket Pipeline.
-In this example `$ARTIFACTORY_DOCKER_REPOSITORY=jfrogtraining-docker-dev.jfrog.io`
+add Environment Variables `$DOCKER_REGISTRY`, `USER`, `PASSWORD` in Environment Variables settings of Circle CI.
 
 ```
-ARTIFACTORY_URL ->  Artifactory URL 
-e.g  ARTIFACTORY_URL -> https://mycompany.jforg.io/mycompany
+$DOCKER_REGISTRY ->  Docker Registry URL 
+e.g  $DOCKER_REGISTRY -> https://mycompany.docker.io/
 
-ARTIFACTORY_USER -> Artifactory User which has permission to deploy artifacts.
-e.g ARTIFACTORY_USER -> admin
+USER -> Docker Registry User which has permission to deploy artifacts.
+e.g USER -> admin
 
-ARTIFACTORY_PASSWORD -> Password for Artifactory User.
-e.g ARTIFACTORY_PASSWORD -> password
+PASSWORD -> Password for Docker Registry User.
+e.g PASSWORD -> password
 
-ARTIFACTORY_DOCKER_REPOSITORY -> Artifactory docker registry to download and push Artifacts.
-e.g ARTIFACTORY_DOCKER_REPOSITORY -> docker 
-
-MVN_REPO -> Artifactory NPM registry to download and push artifacts.
-e.g MVN_REPO -> libs-release
-
-DOCEKR_STAGE_REPO -> Artifactory docker registry to push artifacts.
-e.g DOCEKR_STAGE_REPO -> docker-stage-local
-
-DOCEKR_PROD_REPO -> Artifactory docker registry to push artifacts.
-e.g DOCEKR_PROD_REPO -> docker-prod-local 
-
-DISTRIBUTION_REPO -> Artifactory distribution repository to push artifacts to Bintray.
-e.g DISTRIBUTION_REPO -> pipeline-distribution
 ```
 
 ![screenshot](img/Screen_Shot_2.png)
 
 ##### Step 4:
 
-You should be able to see published Docker image in Artifactory.
+You should be able to see published Docker image in Docker Registry.
 ![screenshot](img/Screen_Shot_3.png)
-
-Also Build information.
-
-![screenshot](img/Screen_Shot_4.png)
-## Note: `This solution only supports Artifactory with valid ssl as Bitbucket Pipeline does not support insecure docker registry `
