@@ -1,0 +1,12 @@
+apiVersion: v1
+appVersion: 1.0.0
+description: A Helm chart for Java Webapp.
+name: java-webapp
+version: 1.0.0
+sources:
+- https://github.com/jainishshah17/Chart-post-install-hook
+maintainers:
+- name: jainishshah17
+  email: jainishshah@yahoo.com
+icon: https://media.githubusercontent.com/media/jainishshah17/Images/master/log1.jpg
+home: http://jainishshah.com/

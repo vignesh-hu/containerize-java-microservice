@@ -1,8 +1,7 @@
-# Containerize Java Microservices using CircleCI
-
+# Containerize Java micro-services using CircleCI
 [![CircleCI](https://circleci.com/gh/jainishshah17/containerize-java-microservice/tree/master.svg?style=svg)](https://circleci.com/gh/jainishshah17/containerize-java-microservice/tree/master)
 
-`To make this integration work you will need to have running Artifactory-Enterprise/Artifactory-pro/Artifactory SAAS.`
+![Microservices](img/Microservices.png)
 
 #### Command to test maven project:    
 ```
@@ -50,7 +49,34 @@ e.g PASSWORD -> password
 
 ![screenshot](img/Screen_Shot_2.png)
 
-##### Step 4:
+### Steps to build helm chart and deploy Java Webapp to Kubernetes using helm:
+## Prerequisites Details
 
-You should be able to see published Docker image in Docker Registry.
-![screenshot](img/Screen_Shot_3.png)
+* Kubernetes 1.8+
+* helm 2.8+
+
+##### Step 1: Package helm chart:
+
+```
+helm package java-webapp
+```
+
+##### Step 2: Deploy Java Webapp to Kubernetes:
+
+```
+helm install --name java-webapp  java-webapp-1.0.0.tgz
+```
+
+##### Step 3: Check status of helm deployment
+
+```
+helm status java-webapp
+```
+
+##### Setp 4: Access Java Webapp
+```
+export SERVICE_IP=$(kubectl get svc --namespace default java-webapp -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+echo http://$SERVICE_IP:80
+```
+
+### Congratulation You have just containerize Java micro-services and deployed it to Kubernetes.

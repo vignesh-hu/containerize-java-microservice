@@ -6,7 +6,7 @@
 <table border="0" cellpadding="10" align="center">
     <tr>
         <td>
-            <img src="https://raw.githubusercontent.com/JFrogDev/artifactory-dcos/master/images/jfrog_lrg.png">
+            <img src="https://media.githubusercontent.com/media/jainishshah17/Images/master/log1.jpg">
         </td>
     </tr>
     <tr>
