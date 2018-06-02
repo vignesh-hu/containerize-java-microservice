@@ -13,8 +13,6 @@ mvn clean install
 
 #### Command to build docker image and push it to docker registry:
 
-![screenshot](img/Screen_Shot_1.png)
-
 *   Build docker image: ```docker build -t $DOCKER_REGISTRY/java-webapp .```
 *   Run docker container: ```docker run -d -p 8080:8080 $DOCKER_REGISTRY/java-webapp```
 *   Test container accessing application in browser [http://localhost:8080/](http://localhost:8080/)
