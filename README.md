@@ -78,5 +78,7 @@ helm status java-webapp
 export SERVICE_IP=$(kubectl get svc --namespace default java-webapp -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 echo http://$SERVICE_IP:80
 ```
+ 
+![screenshot](img/Screen_Shot_3.png)
 
 ### Congratulation You have just containerize Java micro-services and deployed it to Kubernetes.
