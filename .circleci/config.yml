@@ -7,8 +7,8 @@ jobs:
   build:
     docker:
      # specify the version you desire here
-     - image: docker:17.05.0-ce-git
-#    - image: circleci/openjdk:8-jdk
+#     - image: docker:17.05.0-ce-git
+     - image: circleci/openjdk:8-jdk
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -23,11 +23,11 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --no-cache py-pip=9.0.0-r1
-            pip install awscli==1.11.76
+#     - run:
+#         name: Install dependencies
+#         command: |
+#           apk add --no-cache py-pip=9.0.0-r1
+#           pip install awscli==1.11.76
       # Download and cache dependencies
       - restore_cache:
           keys:
