@@ -22,6 +22,11 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache py-pip=9.0.0-r1
+            pip install awscli==1.11.76
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -39,16 +44,68 @@ jobs:
       # run tests!
       - run: mvn integration-test
       - run: mvn clean install
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build -t $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM .
       # Build docker image
-      - run: docker build $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM .
+  #    - run: docker build $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM .
       # Run docker container
-      - run: docker run -d -p 8080:8080 --name java-webapp $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
+ #     - run: docker run -d -p 8080:8080 --name java-webapp $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
       # Test docker image
-      - run: sleep 20 && docker exec java-webapp curl --retry 10 http://localhost:8080/
+ #     - run: sleep 20 && docker exec java-webapp curl --retry 10 http://localhost:8080/
       # Tagging Image with dynamic tag
-      - run: docker tag $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM $DOCKER_REPOSITORY/java-webapp:latest
+  #    - run: docker tag $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM $DOCKER_REPOSITORY/java-webapp:latest
       # docker login
-      - run: docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
+ #     - run: docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
       # Push docker image to docker registry
-      - run: docker push $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
-      - run: docker push $DOCKER_REPOSITORY/java-webapp:latest
+#      - run: docker push $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
+#     - run: docker push $DOCKER_REPOSITORY/java-webapp:latest
+      - deploy:
+          name: Push application Docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              CLUSTER='test-app'
+              FAMILY='test-app'
+              DOCKER_IMAGE='test-app'
+              TASK='test-app'
+              SERVICE='app-service'
+              # Login to AWS
+              aws configure set region $AWS_REGION
+              $(aws ecr get-login)
+              # Tag and push docker image
+              docker tag $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_IMAGE:$CIRCLE_SHA1
+              docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_IMAGE:$CIRCLE_SHA1
+              # Create task for docker deploy
+              task_template='[
+                {
+                  "name": "%s",
+                  "image": "%s.dkr.ecr.%s.amazonaws.com/%s:%s",
+                  "essential": true,
+                  "cpu": 128,
+                  "memoryReservation": 500,
+                  "portMappings": [
+                    {
+                      "containerPort": 80,
+                      "hostPort": 80
+                    }
+                  ],
+                  "environment" : [
+                      { "name" : "NODE_ENV", "value" : "production" }
+                  ]
+                }
+              ]'
+              echo "$task_template"
+              task_def=$(printf "$task_template" $TASK $AWS_ACCOUNT_ID $AWS_REGION $TASK $CIRCLE_SHA1)
+              # Register task definition
+              json=$(aws ecs register-task-definition --container-definitions "$task_def" --family "$FAMILY")
+              OLD_TASK_ID=$(aws ecs list-tasks --cluster "$CLUSTER" --desired-status RUNNING --family "$FAMILY" | egrep "task/" | sed -E "s/.*task\/(.*)\"/\1/")
+              # Grab revision # using regular bash and grep
+              revision=$(echo "$json" | grep -o '"revision": [0-9]*' | grep -Eo '[0-9]+')
+              # Deploy revision 
+              aws ecs stop-task --cluster "$CLUSTER" --task "${OLD_TASK_ID}"
+              sleep 10
+              aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" --task-definition "$TASK":"$revision"
+             
+              return 0
+            fi
