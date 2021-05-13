@@ -40,7 +40,7 @@ jobs:
       - run: mvn integration-test
       - run: mvn clean install
       # Build docker image
-      - run: docker build -t $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM .
+      - run: docker build $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM .
       # Run docker container
       - run: docker run -d -p 8080:8080 --name java-webapp $DOCKER_REPOSITORY/java-webapp:$CIRCLE_BUILD_NUM
       # Test docker image
