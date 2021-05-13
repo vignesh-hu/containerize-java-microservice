@@ -7,8 +7,8 @@ jobs:
   build:
     docker:
      # specify the version you desire here
-#     - image: docker:17.05.0-ce-git
-     - image: circleci/openjdk:8-jdk
+     - image: vignesh123456/javamavenawscli:1.0
+#     - image: circleci/openjdk:8-jdk
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
