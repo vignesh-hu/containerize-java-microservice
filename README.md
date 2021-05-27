@@ -1,4 +1,4 @@
-# Containerize Java micro-services using CircleCI builds
+# Containerize Java micro-services using CircleCI build
 [![CircleCI](https://circleci.com/gh/jainishshah17/containerize-java-microservice/tree/master.svg?style=svg)](https://circleci.com/gh/jainishshah17/containerize-java-microservice/tree/master)
 
 ![Microservices](img/Microservices.png)
