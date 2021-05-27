@@ -104,6 +104,7 @@ jobs:
               revision=$(echo "$json" | grep -o '"revision": [0-9]*' | grep -Eo '[0-9]+')
               # Deploy revision 
               aws ecs stop-task --cluster "$CLUSTER" --task "${OLD_TASK_ID}"
+              
               sleep 10
               aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" --task-definition "$TASK":"$revision"
              
