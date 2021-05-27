@@ -73,7 +73,7 @@ jobs:
               SERVICE='app-service'
               aws configure set region $AWS_REGION
               $(aws ecr get-login)
-#              aws ecr get-login-password --region us-east-1 | docker login --username AWS --password $REPO_PASSWORD 950778703950.dkr.ecr.us-east-1.amazonaws.com
+#             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password $REPO_PASSWORD 950778703950.dkr.ecr.us-east-1.amazonaws.com
               # Tag and push docker image
               docker tag java-webapp:$CIRCLE_BUILD_NUM $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_IMAGE:$CIRCLE_SHA1
               docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_IMAGE:$CIRCLE_SHA1
