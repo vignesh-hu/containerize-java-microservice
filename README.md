@@ -1,8 +1,6 @@
 # Containerize Java micro-services using CircleCI build
 
 
-![Microservices](img/Microservices.png)
-
 #### Command to test maven project:    
 ```
 ## Test Java WebApplication 
