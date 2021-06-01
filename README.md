@@ -1,5 +1,5 @@
 # Containerize Java micro-services using CircleCI build
-[![CircleCI](https://circleci.com/gh/jainishshah17/containerize-java-microservice/tree/master.svg?style=svg)](https://circleci.com/gh/jainishshah17/containerize-java-microservice/tree/master)
+
 
 ![Microservices](img/Microservices.png)
 
@@ -45,7 +45,6 @@ e.g PASSWORD -> password
 
 ```
 
-![screenshot](img/Screen_Shot_2.png)
 
 ### Steps to build helm chart and deploy Java Webapp to Kubernetes using helm:
 ## Prerequisites Details
@@ -76,7 +75,6 @@ helm status java-webapp
 export SERVICE_IP=$(kubectl get svc --namespace default java-webapp -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 echo http://$SERVICE_IP:80
 ```
- 
-![screenshot](img/Screen_Shot_3.png)
+
 
 ### Congratulation You have just containerize Java micro-services and deployed it to Kubernetes.
